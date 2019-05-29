@@ -1,6 +1,10 @@
 """
 Translation rules for Brazilian city Belo Horizonte, state of Minas Gerais
 
+Example:
+curl -o TEMP_BHMAP_ENDERECO_PBH.xml 'http://bhmap.pbh.gov.br/v2/api/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0&TYPENAMES=germem:BHMAP_ENDERECO_PBH&SRSNAME=urn:ogc:def:crs:EPSG::31983&urn:ogc:def:crs:EPSG::31983&OUTPUTFORMAT=GML3&STARTINDEX=0&COUNT=100'
+python3 ./ogr2osm/ogr2osm.py -fv --epsg=31983 --encoding=ISO8859-1 TEMP_BHMAP_ENDERECO_PBH.xml --translation=brazil_mg_bh
+
 Copyright 2019
 
 """
@@ -44,19 +48,19 @@ def filterTags(attrs):
 
 	tags = {}
 	#Add the source
-	#tags.update({'source':'Layer Enderecamento from http://bhmap.pbh.gov.br parsed with --translation=brazil_mg_bh --encoding=ISO8859-1'})
+	tags.update({'source':'bhmap.pbh.gov.br'})
 	#automagically convert names
-	if attrs.get('NOME_LOGRA'):
+	if attrs.get('NOME_LOGRADOURO'):
 		street = ""
-		if attrs.get('SIGLA_TIPO']:
+		if attrs.get('SIGLA_TIPO'):
 			street +=  string.capwords(sigla(attrs['SIGLA_TIPO'])) + ' '
-		street += string.capwords(attrs['NOME_LOGRA'].strip(' '))
+		street += string.capwords(attrs['NOME_LOGRADOURO'].strip(' '))
 		tags.update({'addr:street':street})
 
-	if attrs.get('NUMERO_IMO'):
-		housenumber = "%d"%float(attrs['NUMERO_IMO'].strip(' '))
-		if attrs.get('LETRA_IMOV'):
-			housenumber += ' ' + attrs['LETRA_IMOV'].strip(' ')
+	if attrs.get('NUMERO_IMOVEL'):
+		housenumber = "%d"%float(attrs['NUMERO_IMOVEL'].strip(' '))
+		if attrs.get('LETRA_IMOVEL'):
+			housenumber += ' ' + attrs['LETRA_IMOVEL'].strip(' ')
 		tags.update({'addr:housenumber':housenumber})
 
 	if attrs.get('CEP'):
